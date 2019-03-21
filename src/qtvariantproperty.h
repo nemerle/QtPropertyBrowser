@@ -45,9 +45,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 
-#if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
-#endif
 
 typedef QMap<int, QIcon> QtIconMap;
 
@@ -57,7 +55,7 @@ class QtVariantPropertyPrivate;
 class QT_QTPROPERTYBROWSER_EXPORT QtVariantProperty : public QtProperty
 {
 public:
-    ~QtVariantProperty();
+    ~QtVariantProperty() override;
     QVariant value() const;
     QVariant attributeValue(const QString &attribute) const;
     int valueType() const;
@@ -81,7 +79,7 @@ class QT_QTPROPERTYBROWSER_EXPORT QtVariantPropertyManager : public QtAbstractPr
     Q_OBJECT
 public:
     QtVariantPropertyManager(QObject *parent = nullptr);
-    ~QtVariantPropertyManager();
+    ~QtVariantPropertyManager() override;
 
     virtual QtVariantProperty *addProperty(int propertyType, const QString &name = QString());
 
@@ -168,7 +166,7 @@ class QT_QTPROPERTYBROWSER_EXPORT QtVariantEditorFactory : public QtAbstractEdit
     Q_OBJECT
 public:
     QtVariantEditorFactory(QObject *parent = nullptr);
-    ~QtVariantEditorFactory();
+    ~QtVariantEditorFactory() override;
 protected:
     void connectPropertyManager(QtVariantPropertyManager *manager) override;
     QWidget *createEditor(QtVariantPropertyManager *manager, QtProperty *property,
@@ -181,9 +179,7 @@ private:
     Q_DISABLE_COPY(QtVariantEditorFactory)
 };
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
 
 Q_DECLARE_METATYPE(QIcon)
 Q_DECLARE_METATYPE(QtIconMap)

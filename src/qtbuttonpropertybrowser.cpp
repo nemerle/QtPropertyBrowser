@@ -65,12 +65,12 @@ public:
 
     void slotEditorDestroyed();
     void slotUpdate();
-    void slotToggled(bool checked);
+    void slotToggled(QObject *sender,bool checked);
 
     struct WidgetItem
     {
         WidgetItem()                    = default;
-        
+
         QList<WidgetItem *> children;
         QWidget *           widget      = nullptr; // can be null
         QLabel *            label       = nullptr; // main label with property name
@@ -221,9 +221,9 @@ void QtButtonPropertyBrowserPrivate::setExpanded(WidgetItem *item, bool expanded
     item->button->setArrowType(expanded ? Qt::UpArrow : Qt::DownArrow);
 }
 
-void QtButtonPropertyBrowserPrivate::slotToggled(bool checked)
+void QtButtonPropertyBrowserPrivate::slotToggled(QObject *sender, bool checked)
 {
-    WidgetItem *item = m_buttonToItem.value(q_ptr->sender());
+    WidgetItem *item = m_buttonToItem.value(sender);
     if (!item)
         return;
 
@@ -288,10 +288,10 @@ void QtButtonPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, QtBr
             parentItem->container = container;
             parentItem->button = createButton();
             m_buttonToItem[parentItem->button] = parentItem;
+            auto sender_button=parentItem->button;
+            QObject::connect(parentItem->button, &QToolButton::toggled,
+                           [this,sender_button](bool t) { this->slotToggled(sender_button,t); });
 
-            QObject::connect(parentItem->button, &QToolButton::toggled, 
-                           [this](bool t) { this->slotToggled(t); });
-            
             parentItem->layout = new QGridLayout();
             container->setLayout(parentItem->layout);
             if (parentItem->label) {

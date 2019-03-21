@@ -789,15 +789,13 @@ QtProperty *QtAbstractPropertyManager::addProperty(const QString &name)
 
     \sa addProperty(), setPropertyId(const QString&), properties()
 */
-QtProperty * QtAbstractPropertyManager::qtProperty(const QString &id)const
+QtProperty *QtAbstractPropertyManager::qtProperty(const QString &id) const
 {
-  foreach(QtProperty* prop, d_ptr->m_properties)
-    {
-    if (prop->propertyId() == id)
-      {
+  for(QtProperty *prop : d_ptr->m_properties) {
+    if (prop->propertyId() == id) {
       return prop;
-      }
     }
+  }
   return nullptr;
 }
 
@@ -1296,7 +1294,7 @@ void QtAbstractPropertyBrowserPrivate::insertSubTree(QtProperty *property,
     QtAbstractPropertyManager *manager = property->propertyManager();
     if (m_managerToProperties[manager].isEmpty()) {
         // connect manager's signals
-        
+
         m_insertedConn = q_ptr->connect(manager, &QtAbstractPropertyManager::propertyInserted,
                 [this](QtProperty *p,QtProperty *parent,QtProperty *after) {
                     this->slotPropertyInserted(p,parent,after);

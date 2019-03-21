@@ -199,11 +199,11 @@ QWidget *DecoratedDoubleSpinBoxFactory::createEditor(DecoratedDoublePropertyMana
     QtAbstractEditorFactoryBase *base = originalFactory;
     QWidget *w = base->createEditor(property, parent);
     if (!w)
-        return 0;
+        return nullptr;
 
     QDoubleSpinBox *spinBox = qobject_cast<QDoubleSpinBox *>(w);
     if (!spinBox)
-        return 0;
+        return nullptr;
 
     spinBox->setPrefix(manager->prefix(property));
     spinBox->setSuffix(manager->suffix(property));

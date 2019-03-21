@@ -49,17 +49,17 @@ public:
     VariantManager(QObject *parent = nullptr);
     ~VariantManager() override;
 
-    virtual QVariant value(const QtProperty *property) const;
-    virtual int valueType(int propertyType) const;
-    virtual bool isPropertyTypeSupported(int propertyType) const;
+    virtual QVariant value(const QtProperty *property) const override;
+    virtual int valueType(int propertyType) const override;
+    virtual bool isPropertyTypeSupported(int propertyType) const override;
 
-    QString valueText(const QtProperty *property) const;
+    QString valueText(const QtProperty *property) const override;
 
 public slots:
-    virtual void setValue(QtProperty *property, const QVariant &val);
+    void setValue(QtProperty *property, const QVariant &val) override;
 protected:
-    virtual void initializeProperty(QtProperty *property);
-    virtual void uninitializeProperty(QtProperty *property);
+    void initializeProperty(QtProperty *property) override;
+    void uninitializeProperty(QtProperty *property) override;
 private slots:
     void slotValueChanged(QtProperty *property, const QVariant &value);
     void slotPropertyDestroyed(QtProperty *property);

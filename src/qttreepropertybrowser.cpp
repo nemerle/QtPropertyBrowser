@@ -260,7 +260,7 @@ private:
 
     using EditorToPropertyMap = QHash<QWidget *, QtProperty *>;
     using PropertyToEditorMap = QHash<QtProperty *, QWidget *>;
-    
+
     mutable EditorToPropertyMap m_editorToProperty;
     mutable PropertyToEditorMap m_propertyToEditor;
     QtTreePropertyBrowserPrivate *m_editorPrivate = nullptr;
@@ -359,7 +359,7 @@ void QtPropertyEditorDelegate::paint(QPainter *painter, const QStyleOptionViewIt
         opt.palette.setColor(QPalette::Text, opt.palette.color(QPalette::BrightText));
     } else {
         c = m_editorPrivate->calculatedBackgroundColor(m_editorPrivate->indexToBrowserItem(index));
-        if (c.isValid() && (opt.features & QStyleOptionViewItemV2::Alternate))
+        if (c.isValid() && (opt.features & QStyleOptionViewItem::Alternate))
             c = c.lighter(112);
     }
     if (c.isValid())

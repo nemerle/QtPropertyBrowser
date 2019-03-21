@@ -164,6 +164,8 @@ template <class PropertyManager>
 class QtAbstractEditorFactory : public QtAbstractEditorFactoryBase
 {
 public:
+    using Manager = PropertyManager;
+
     explicit QtAbstractEditorFactory(QObject *parent) : QtAbstractEditorFactoryBase(parent) {}
     QWidget *createEditor(QtProperty *property, QWidget *parent) override
     {
@@ -201,14 +203,10 @@ public:
     PropertyManager *propertyManager(QtProperty *property) const
     {
         QtAbstractPropertyManager *manager = property->propertyManager();
-        QSetIterator<PropertyManager *> itManager(m_managers);
-        while (itManager.hasNext()) {
-            PropertyManager *m = itManager.next();
-            if (m == manager) {
-                return m;
-            }
-        }
-        return nullptr;
+        auto iter = m_managers.find((PropertyManager *)manager);
+        if(iter==m_managers.end())
+            return nullptr;
+        return *iter;
     }
 protected:
     virtual void connectPropertyManager(PropertyManager *manager) = 0;

@@ -202,7 +202,7 @@ QtBoolEdit::QtBoolEdit(QWidget *parent) :
         lt->setContentsMargins(0, 0, 4, 0);
     lt->addWidget(m_checkBox);
     setLayout(lt);
-    connect(m_checkBox, SIGNAL(toggled(bool)), this, SIGNAL(toggled(bool)));
+    connect(m_checkBox, &QCheckBox::toggled, this, &QtBoolEdit::toggled);
     setFocusProxy(m_checkBox);
     m_checkBox->setText(tr("True"));
 }
@@ -239,7 +239,8 @@ void QtBoolEdit::setChecked(bool c)
     m_checkBox->setChecked(c);
     if (!m_textVisible)
         return;
-    m_checkBox->setText(isChecked() ? tr("True") : tr("False"));
+    bool ischk=isChecked();
+    m_checkBox->setText(ischk ? tr("True") : tr("False"));
 }
 
 bool QtBoolEdit::blockCheckBoxSignals(bool block)

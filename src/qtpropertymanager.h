@@ -57,7 +57,7 @@ class PropertyManagerPrivateT
 public:
     using PropertyValueMap = QHash<const QtProperty *, STORED>;
     using Data = STORED;
-    
+
     PropertyValueMap m_values;
 };
 
@@ -82,8 +82,10 @@ class QT_QTPROPERTYBROWSER_EXPORT QtIntPropertyManager : public QtAbstractProper
 {
     Q_OBJECT
 public:
+    using ValueType = int;
+
     QtIntPropertyManager(QObject *parent = nullptr);
-    ~QtIntPropertyManager();
+    ~QtIntPropertyManager() override;
 
     int value(const QtProperty *property) const;
     int minimum(const QtProperty *property) const;
@@ -116,8 +118,10 @@ class QT_QTPROPERTYBROWSER_EXPORT QtBoolPropertyManager : public QtAbstractPrope
 {
     Q_OBJECT
 public:
+    using ValueType = bool;
+
     QtBoolPropertyManager(QObject *parent = nullptr);
-    ~QtBoolPropertyManager();
+    ~QtBoolPropertyManager() override;
 
     bool value(const QtProperty *property) const;
 
@@ -142,6 +146,8 @@ class QT_QTPROPERTYBROWSER_EXPORT QtDoublePropertyManager : public QtAbstractPro
 {
     Q_OBJECT
 public:
+    using ValueType = double;
+
     QtDoublePropertyManager(QObject *parent = nullptr);
     ~QtDoublePropertyManager();
 
@@ -179,6 +185,8 @@ class QT_QTPROPERTYBROWSER_EXPORT QtStringPropertyManager : public QtAbstractPro
 {
     Q_OBJECT
 public:
+    using ValueType = QString;
+
     QtStringPropertyManager(QObject *parent = nullptr);
     ~QtStringPropertyManager();
 
@@ -207,6 +215,8 @@ class QT_QTPROPERTYBROWSER_EXPORT QtDatePropertyManager : public QtAbstractPrope
 {
     Q_OBJECT
 public:
+    using ValueType = QDate;
+
     QtDatePropertyManager(QObject *parent = nullptr);
     ~QtDatePropertyManager();
 
@@ -238,8 +248,10 @@ class QT_QTPROPERTYBROWSER_EXPORT QtTimePropertyManager : public QtAbstractPrope
 {
     Q_OBJECT
 public:
+    using ValueType = QTime;
+
     QtTimePropertyManager(QObject *parent = nullptr);
-    ~QtTimePropertyManager();
+    ~QtTimePropertyManager() override;
 
     QTime value(const QtProperty *property) const;
 
@@ -263,8 +275,10 @@ class QT_QTPROPERTYBROWSER_EXPORT QtDateTimePropertyManager : public QtAbstractP
 {
     Q_OBJECT
 public:
+    using ValueType = QDateTime;
+
     QtDateTimePropertyManager(QObject *parent = nullptr);
-    ~QtDateTimePropertyManager();
+    ~QtDateTimePropertyManager() override;
 
     QDateTime value(const QtProperty *property) const;
 
@@ -288,8 +302,10 @@ class QT_QTPROPERTYBROWSER_EXPORT QtKeySequencePropertyManager : public QtAbstra
 {
     Q_OBJECT
 public:
+    using ValueType = QKeySequence;
+
     QtKeySequencePropertyManager(QObject *parent = nullptr);
-    ~QtKeySequencePropertyManager();
+    ~QtKeySequencePropertyManager() override;
 
     QKeySequence value(const QtProperty *property) const;
 
@@ -313,8 +329,10 @@ class QT_QTPROPERTYBROWSER_EXPORT QtCharPropertyManager : public QtAbstractPrope
 {
     Q_OBJECT
 public:
+    using ValueType = QChar;
+
     QtCharPropertyManager(QObject *parent = nullptr);
-    ~QtCharPropertyManager();
+    ~QtCharPropertyManager() override;
 
     QChar value(const QtProperty *property) const;
 
@@ -569,6 +587,7 @@ class QT_QTPROPERTYBROWSER_EXPORT QtEnumPropertyManager : public QtAbstractPrope
 {
     Q_OBJECT
 public:
+    using ValueType = int;
     QtEnumPropertyManager(QObject *parent = nullptr);
     ~QtEnumPropertyManager();
 
@@ -664,6 +683,8 @@ class QT_QTPROPERTYBROWSER_EXPORT QtFontPropertyManager : public QtAbstractPrope
 {
     Q_OBJECT
 public:
+    using ValueType = QFont;
+
     QtFontPropertyManager(QObject *parent = nullptr);
     ~QtFontPropertyManager();
 
@@ -700,6 +721,8 @@ class QT_QTPROPERTYBROWSER_EXPORT QtColorPropertyManager : public QtAbstractProp
 {
     Q_OBJECT
 public:
+    using ValueType = QColor;
+
     QtColorPropertyManager(QObject *parent = nullptr);
     ~QtColorPropertyManager();
 

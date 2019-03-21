@@ -3,11 +3,12 @@ PROJECT(QtPropertyBrowser)
 
 ########################### Misc. Configs ##############################
 # Add custom cmake files folder
+
 SET (PROJECT_CMAKE_DIR ${PROJECT_SOURCE_DIR}/cmake)
 SET (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${PROJECT_CMAKE_DIR}")
 
 # Add custom Install Settings
-INCLUDE(InstallSettings)
+#INCLUDE(InstallSettings)
 
 ##################### Look for required libraries ######################
 
