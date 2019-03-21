@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 PROJECT(QtPropertyBrowser)
 
 ########################### Misc. Configs ##############################
@@ -6,16 +6,13 @@ PROJECT(QtPropertyBrowser)
 SET (PROJECT_CMAKE_DIR ${PROJECT_SOURCE_DIR}/cmake)
 SET (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${PROJECT_CMAKE_DIR}")
 
-# Add custom Compile Settings and flags
-INCLUDE(CompileSettings)
-
 # Add custom Install Settings
 INCLUDE(InstallSettings)
 
 ##################### Look for required libraries ######################
 
 # Add QT dependencies
-FIND_PACKAGE(Qt5Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 ######################### Add Primary Targets ##########################
 ADD_SUBDIRECTORY(src)
@@ -42,10 +39,3 @@ MESSAGE(STATUS "Build type Flags:   ${CMAKE_BUILD_TYPE_FLAGS}")
 MESSAGE(STATUS "C++ compile flags:  ${CMAKE_CXX_FLAGS}")
 MESSAGE(STATUS "Install Path:       ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "Build Examples:     ${BUILD_EXAMPLES}")
-IF(Qt5Widgets_FOUND)
-  MESSAGE(STATUS "QT Version:         ${Qt5Widgets_VERSION_STRING}")
-  MESSAGE(STATUS "QT INCLUDE DIRS:    ${Qt5Widgets_INCLUDE_DIRS}")
-  MESSAGE(STATUS "QT COMPILE DEFS:    ${Qt5Widgets_COMPILE_DEFINITIONS}")
-  MESSAGE(STATUS "QT DEFS:            ${Qt5Widgets_DEFINITIONS}")
-  MESSAGE(STATUS "QT EXE FLAGS:       ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-ENDIF()

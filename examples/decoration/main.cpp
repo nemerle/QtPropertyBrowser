@@ -155,7 +155,7 @@ class DecoratedDoubleSpinBoxFactory : public QtAbstractEditorFactory<DecoratedDo
 {
     Q_OBJECT
 public:
-    DecoratedDoubleSpinBoxFactory(QObject *parent = 0);
+    DecoratedDoubleSpinBoxFactory(QObject *parent = nullptr);
     ~DecoratedDoubleSpinBoxFactory();
 protected:
     void connectPropertyManager(DecoratedDoublePropertyManager *manager);

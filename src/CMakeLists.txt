@@ -38,7 +38,17 @@ add_library(${TARGET_NAME}
   ${_IMPL_HDRS}
   )
 
-target_link_libraries(${TARGET_NAME} Qt5::Widgets)
+target_link_libraries(${TARGET_NAME} PUBLIC Qt5::Widgets)
+target_compile_features(${TARGET_NAME} PUBLIC cxx_std_11)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    target_compile_options(${TARGET_NAME} PRIVATE -Wall)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(${TARGET_NAME} PRIVATE -Wall -pedantic -Wno-long-long -Wno-variadic-macros)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  # using Intel C++
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    target_compile_options(${TARGET_NAME} PRIVATE /W3)
+endif()
 
 ######################### Installation Stuff ###########################
 include(GenerateExportHeader)

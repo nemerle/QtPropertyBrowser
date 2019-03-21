@@ -46,8 +46,8 @@ class VariantManager : public QtVariantPropertyManager
 {
     Q_OBJECT
 public:
-    VariantManager(QObject *parent = 0);
-    ~VariantManager();
+    VariantManager(QObject *parent = nullptr);
+    ~VariantManager() override;
 
     virtual QVariant value(const QtProperty *property) const;
     virtual int valueType(int propertyType) const;
@@ -155,7 +155,7 @@ void VariantManager::setValue(QtProperty *property, const QVariant &val)
     if (propertyToData.contains(property)) {
         if (val.type() != QVariant::PointF && !val.canConvert(QVariant::PointF))
             return;
-        QPointF p = val.value<QPointF>();
+        QPointF p = val.toPointF();
         Data d = propertyToData[property];
         d.value = p;
         if (d.x)

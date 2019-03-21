@@ -61,7 +61,7 @@ void CanvasView::handleMouseClickEvent(QMouseEvent* event)
 {
     QPoint p = inverseWorldMatrix().map(event->pos());
     QtCanvasItemList l = canvas()->collisions(p);
-    moving = 0;
+    moving = nullptr;
     if (!l.isEmpty())
         moving = l.first();
     moving_start = p;
@@ -132,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent)
     propertyEditor->setFactoryForManager(variantManager, variantFactory);
     dock->setWidget(propertyEditor);
 
-    currentItem = 0;
+    currentItem = nullptr;
 
     connect(canvasView, SIGNAL(itemClicked(QtCanvasItem *)),
             this, SLOT(itemClicked(QtCanvasItem *)));
@@ -140,7 +140,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, SLOT(itemMoved(QtCanvasItem *)));
 
     fillView();
-    itemClicked(0);
+    itemClicked(nullptr);
 }
 
 void MainWindow::newRectangle()
@@ -177,7 +177,7 @@ void MainWindow::deleteObject()
         return;
 
     delete currentItem;
-    itemClicked(0);
+    itemClicked(nullptr);
     canvas->update();
 }
 
@@ -185,7 +185,7 @@ void MainWindow::clearAll()
 {
     QtCanvasItemList list = canvas->allItems();
     qDeleteAll(list);
-    itemClicked(0);
+    itemClicked(nullptr);
     canvas->update();
 }
 
@@ -384,7 +384,7 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
     } else if (id == QLatin1String("text")) {
         if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
             QtCanvasText *i = (QtCanvasText *)currentItem;
-            i->setText(value.value<QString>());
+            i->setText(value.toString());
         }
     } else if (id == QLatin1String("color")) {
         if (currentItem->rtti() == QtCanvasItem::Rtti_Text) {
@@ -415,17 +415,17 @@ void MainWindow::valueChanged(QtProperty *property, const QVariant &value)
     } else if (id == QLatin1String("endpoint")) {
         if (currentItem->rtti() == QtCanvasItem::Rtti_Line) {
             QtCanvasLine *i = (QtCanvasLine *)currentItem;
-            QPoint p = value.value<QPoint>();
+            QPoint p = value.toPoint();
             i->setPoints(i->startPoint().x(), i->startPoint().y(), p.x(), p.y());
         }
     } else if (id == QLatin1String("size")) {
         if (currentItem->rtti() == QtCanvasItem::Rtti_Rectangle) {
             QtCanvasRectangle *i = (QtCanvasRectangle *)currentItem;
-            QSize s = value.value<QSize>();
+            QSize s = value.toSize();
             i->setSize(s.width(), s.height());
         } else if (currentItem->rtti() == QtCanvasItem::Rtti_Ellipse) {
             QtCanvasEllipse *i = (QtCanvasEllipse *)currentItem;
-            QSize s = value.value<QSize>();
+            QSize s = value.toSize();
             i->setSize(s.width(), s.height());
         }
     }

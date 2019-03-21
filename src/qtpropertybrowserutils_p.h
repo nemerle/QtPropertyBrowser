@@ -49,17 +49,14 @@
 // We mean it.
 //
 
-#ifndef QTPROPERTYBROWSERUTILS_H
-#define QTPROPERTYBROWSERUTILS_H
+#pragma once
+
 
 #include <QtCore/QMap>
 #include <QtGui/QIcon>
 #include <QWidget>
-#include <QtCore/QStringList>
 
-#if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
-#endif
 
 class QMouseEvent;
 class QCheckBox;
@@ -100,7 +97,7 @@ public:
 class QtBoolEdit : public QWidget {
     Q_OBJECT
 public:
-    QtBoolEdit(QWidget *parent = 0);
+    QtBoolEdit(QWidget *parent = nullptr);
 
     bool textVisible() const { return m_textVisible; }
     void setTextVisible(bool textVisible);
@@ -117,8 +114,8 @@ Q_SIGNALS:
     void toggled(bool);
 
 protected:
-    void mousePressEvent(QMouseEvent * event);
-    void paintEvent(QPaintEvent *);
+    void mousePressEvent(QMouseEvent * event) override;
+    void paintEvent(QPaintEvent *) override;
 
 private:
     QCheckBox *m_checkBox;
@@ -129,21 +126,21 @@ class QtKeySequenceEdit : public QWidget
 {
     Q_OBJECT
 public:
-    QtKeySequenceEdit(QWidget *parent = 0);
+    QtKeySequenceEdit(QWidget *parent = nullptr);
 
     QKeySequence keySequence() const;
-    bool eventFilter(QObject *o, QEvent *e);
+    bool eventFilter(QObject *o, QEvent *e) override;
 public Q_SLOTS:
     void setKeySequence(const QKeySequence &sequence);
 Q_SIGNALS:
     void keySequenceChanged(const QKeySequence &sequence);
 protected:
-    void focusInEvent(QFocusEvent *e);
-    void focusOutEvent(QFocusEvent *e);
-    void keyPressEvent(QKeyEvent *e);
-    void keyReleaseEvent(QKeyEvent *e);
-    void paintEvent(QPaintEvent *);
-    bool event(QEvent *e);
+    void focusInEvent(QFocusEvent *e) override;
+    void focusOutEvent(QFocusEvent *e) override;
+    void keyPressEvent(QKeyEvent *e) override;
+    void keyReleaseEvent(QKeyEvent *e) override;
+    void paintEvent(QPaintEvent *) override;
+    bool event(QEvent *e) override;
 private slots:
     void slotClearShortcut();
 private:
@@ -155,8 +152,4 @@ private:
     QLineEdit *m_lineEdit;
 };
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
-
-#endif

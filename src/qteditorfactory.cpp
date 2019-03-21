@@ -87,9 +87,9 @@ class EditorFactoryPrivate
 {
 public:
 
-    typedef QList<Editor *> EditorList;
-    typedef QMap<QtProperty *, EditorList> PropertyToEditorListMap;
-    typedef QMap<Editor *, QtProperty *> EditorToPropertyMap;
+    using EditorList = QList<Editor *>;
+    using PropertyToEditorListMap = QMap<QtProperty *, EditorList>;
+    using EditorToPropertyMap = QMap<Editor *, QtProperty *>;
 
     Editor *createEditor(QtProperty *property, QWidget *parent);
     void initializeEditor(QtProperty *property, Editor *e);
@@ -102,7 +102,7 @@ public:
 template <class Editor>
 Editor *EditorFactoryPrivate<Editor>::createEditor(QtProperty *property, QWidget *parent)
 {
-    Editor *editor = new Editor(parent);
+    auto editor = new Editor(parent);
     initializeEditor(property, editor);
     return editor;
 }
@@ -141,7 +141,7 @@ void EditorFactoryPrivate<Editor>::slotEditorDestroyed(QObject *object)
 
 class QtSpinBoxFactoryPrivate : public EditorFactoryPrivate<QSpinBox>
 {
-    QtSpinBoxFactory *q_ptr;
+    QtSpinBoxFactory *q_ptr = nullptr;
     Q_DECLARE_PUBLIC(QtSpinBoxFactory)
 public:
 
@@ -627,7 +627,7 @@ void QtCheckBoxFactoryPrivate::slotSetValue(bool value)
 {
     QObject *object = q_ptr->sender();
 
-    const QMap<QtBoolEdit *, QtProperty *>::ConstIterator ecend = m_editorToProperty.constEnd();
+    const auto ecend = m_editorToProperty.constEnd();
     for (QMap<QtBoolEdit *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend;  ++itEditor)
         if (itEditor.key() == object) {
             QtProperty *property = itEditor.value();
@@ -724,7 +724,6 @@ public:
 
 void QtDoubleSpinBoxFactoryPrivate::slotPropertyChanged(QtProperty *property, double value)
 {
-    QList<QDoubleSpinBox *> editors = m_createdEditors[property];
     QListIterator<QDoubleSpinBox *> itEditor(m_createdEditors[property]);
     while (itEditor.hasNext()) {
         QDoubleSpinBox *editor = itEditor.next();
@@ -937,13 +936,12 @@ void QtLineEditFactoryPrivate::slotRegExpChanged(QtProperty *property,
         QLineEdit *editor = itEditor.next();
         editor->blockSignals(true);
         const QValidator *oldValidator = editor->validator();
-        QValidator *newValidator = 0;
+        QValidator *newValidator = nullptr;
         if (regExp.isValid()) {
             newValidator = new QRegExpValidator(regExp, editor);
         }
         editor->setValidator(newValidator);
-        if (oldValidator)
-            delete oldValidator;
+        delete oldValidator;
         editor->blockSignals(false);
     }
 }
@@ -1516,21 +1514,21 @@ class QtCharEdit : public QWidget
 {
     Q_OBJECT
 public:
-    QtCharEdit(QWidget *parent = 0);
+    QtCharEdit(QWidget *parent = nullptr);
 
     QChar value() const;
-    bool eventFilter(QObject *o, QEvent *e);
+    bool eventFilter(QObject *o, QEvent *e) override;
 public Q_SLOTS:
     void setValue(const QChar &value);
 Q_SIGNALS:
-    void valueChanged(const QChar &value);
+    void valueChanged(QChar value);
 protected:
-    void focusInEvent(QFocusEvent *e);
-    void focusOutEvent(QFocusEvent *e);
-    void keyPressEvent(QKeyEvent *e);
-    void keyReleaseEvent(QKeyEvent *e);
-    void paintEvent(QPaintEvent *);
-    bool event(QEvent *e);
+    void focusInEvent(QFocusEvent *e) override;
+    void focusOutEvent(QFocusEvent *e) override;
+    void keyPressEvent(QKeyEvent *e) override;
+    void keyReleaseEvent(QKeyEvent *e) override;
+    void paintEvent(QPaintEvent *) override;
+    bool event(QEvent *e) override;
 private slots:
     void slotClearChar();
 private:
@@ -1543,7 +1541,7 @@ private:
 QtCharEdit::QtCharEdit(QWidget *parent)
     : QWidget(parent),  m_lineEdit(new QLineEdit(this))
 {
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto layout = new QHBoxLayout(this);
     layout->addWidget(m_lineEdit);
     layout->setMargin(0);
     m_lineEdit->installEventFilter(this);
@@ -1569,7 +1567,7 @@ bool QtCharEdit::eventFilter(QObject *o, QEvent *e)
                 actionString = actionString.remove(pos, actionString.length() - pos);
             action->setText(actionString);
         }
-        QAction *actionBefore = 0;
+        QAction *actionBefore = nullptr;
         if (actions.count() > 0)
             actionBefore = actions[0];
         QAction *clearAction = new QAction(tr("Clear Char"), menu);
@@ -1982,7 +1980,7 @@ class QtCursorEditorFactoryPrivate
     QtCursorEditorFactory *q_ptr;
     Q_DECLARE_PUBLIC(QtCursorEditorFactory)
 public:
-    QtCursorEditorFactoryPrivate();
+    QtCursorEditorFactoryPrivate() = default;
 
     void slotPropertyChanged(QtProperty *property, const QCursor &cursor);
     void slotEnumChanged(QtProperty *property, int value);
@@ -1995,14 +1993,8 @@ public:
     QMap<QtProperty *, QtProperty *> m_enumToProperty;
     QMap<QtProperty *, QList<QWidget *> > m_enumToEditors;
     QMap<QWidget *, QtProperty *> m_editorToEnum;
-    bool m_updatingEnum;
+    bool m_updatingEnum = false;
 };
-
-QtCursorEditorFactoryPrivate::QtCursorEditorFactoryPrivate()
-    : m_updatingEnum(false)
-{
-
-}
 
 void QtCursorEditorFactoryPrivate::slotPropertyChanged(QtProperty *property, const QCursor &cursor)
 {
@@ -2107,7 +2099,7 @@ void QtCursorEditorFactory::connectPropertyManager(QtCursorPropertyManager *mana
 QWidget *QtCursorEditorFactory::createEditor(QtCursorPropertyManager *manager, QtProperty *property,
         QWidget *parent)
 {
-    QtProperty *enumProp = 0;
+    QtProperty *enumProp;
     if (d_ptr->m_propertyToEnum.contains(property)) {
         enumProp = d_ptr->m_propertyToEnum[property];
     } else {
@@ -2148,7 +2140,7 @@ class QtColorEditWidget : public QWidget {
 public:
     QtColorEditWidget(QWidget *parent);
 
-    bool eventFilter(QObject *obj, QEvent *ev);
+    bool eventFilter(QObject *obj, QEvent *ev) override;
 
 public Q_SLOTS:
     void setValue(const QColor &value);
@@ -2157,7 +2149,7 @@ Q_SIGNALS:
     void valueChanged(const QColor &value);
 
 protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *) override;
 
 private Q_SLOTS:
     void buttonClicked();
@@ -2357,7 +2349,7 @@ class QtFontEditWidget : public QWidget {
 public:
     QtFontEditWidget(QWidget *parent);
 
-    bool eventFilter(QObject *obj, QEvent *ev);
+    bool eventFilter(QObject *obj, QEvent *ev) override;
 
 public Q_SLOTS:
     void setValue(const QFont &value);
@@ -2366,7 +2358,7 @@ Q_SIGNALS:
     void valueChanged(const QFont &value);
 
 protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *) override;
 
 private Q_SLOTS:
     void buttonClicked();

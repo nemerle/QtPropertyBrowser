@@ -51,15 +51,13 @@
 #include <QPaintEvent>
 #include <QPainterPath>
 
-#include <stdlib.h>
+#include <cstdlib>
+
 using namespace Qt;
 
 class QtCanvasData {
 public:
-    QtCanvasData()
-    {
-    }
-
+    QtCanvasData() = default;
     QList<QtCanvasView *> viewList;
     QSet<QtCanvasItem *> itemDict;
     QSet<QtCanvasItem *> animDict;
@@ -67,7 +65,7 @@ public:
 
 class QtCanvasViewData {
 public:
-    QtCanvasViewData() {}
+    QtCanvasViewData() = default;
     QMatrix xform;
     QMatrix ixform;
     bool highQuality;
@@ -290,7 +288,7 @@ public:
 
 class QtCanvasChunk {
 public:
-    QtCanvasChunk() : changed(true) { }
+    QtCanvasChunk() = default;
     // Other code assumes lists are not deleted. Assignment is also
     // done on ChunkRecs. So don't add that sort of thing here.
 
@@ -335,7 +333,7 @@ public:
 
 private:
     QtCanvasItemList m_list;
-    bool changed;
+    bool changed{true};
 };
 
 
@@ -521,9 +519,9 @@ void QtCanvas::init(int w, int h, int chunksze, int mxclusters)
     chwidth = (w+chunksize-1)/chunksize;
     chheight = (h+chunksize-1)/chunksize;
     chunks = new QtCanvasChunk[chwidth*chheight];
-    update_timer = 0;
+    update_timer = nullptr;
     bgcolor = white;
-    grid = 0;
+    grid = nullptr;
     htiles = 0;
     vtiles = 0;
     debug_redraw_areas = false;
@@ -586,7 +584,7 @@ QtCanvas::QtCanvas(QPixmap p,
 QtCanvas::~QtCanvas()
 {
     for (int i = 0; i < d->viewList.size(); ++i)
-        d->viewList[i]->viewing = 0;
+        d->viewList[i]->viewing = nullptr;
     QtCanvasItemList all = allItems();
     for (QtCanvasItemList::Iterator it = all.begin(); it!= all.end(); ++it)
         delete *it;
@@ -889,8 +887,7 @@ void QtCanvas::setAdvancePeriod(int ms)
         if (update_timer)
             update_timer->stop();
     } else {
-        if (update_timer)
-            delete update_timer;
+        delete update_timer;
         update_timer = new QTimer(this);
         connect(update_timer, SIGNAL(timeout()), this, SLOT(advance()));
         update_timer->start(ms);
@@ -910,8 +907,7 @@ void QtCanvas::setUpdatePeriod(int ms)
         if (update_timer)
             update_timer->stop();
     } else {
-        if (update_timer)
-            delete update_timer;
+        delete update_timer;
         update_timer = new QTimer(this);
         connect(update_timer, SIGNAL(timeout()), this, SLOT(update()));
         update_timer->start(ms);
@@ -925,7 +921,7 @@ void QtCanvas::setUpdatePeriod(int ms)
 
     The advance takes place in two phases. In phase 0, the
     QtCanvasItem::advance() function of each QtCanvasItem::animated()
-    canvas item is called with paramater 0. Then all these canvas
+    canvas item is called with parameter 0. Then all these canvas
     items are called again, with parameter 1. In phase 0, the canvas
     items should not change position, merely examine other items on
     the canvas for which special processing is required, such as
@@ -1435,7 +1431,7 @@ void QtCanvas::setTiles(QPixmap p,
         tilew = tilewidth;
         tileh = tileheight;
     } else {
-        grid = 0;
+        grid = nullptr;
     }
     if (h + v > 10) {
         int s = scm(tilewidth, tileheight);
@@ -1620,7 +1616,7 @@ QtCanvasItem::QtCanvasItem(QtCanvas* canvas) :
     ena = 0;
     act = 0;
 
-    ext = 0;
+    ext = nullptr;
     if (cnv) cnv->addItem(this);
 }
 
@@ -2016,7 +2012,7 @@ bool qt_testCollision(const QtCanvasSprite* s1, const QtCanvasSprite* s2)
         t = x1; x1 = x2; x2 = t;
         t = y1; x1 = y2; y2 = t;
         s2image = s1image;
-        s1image = 0;
+        s1image = nullptr;
     }
 
     // s2image != 0
@@ -2197,7 +2193,7 @@ static bool collision_double_dispatch(const QtCanvasSprite* s1,
 */
 bool QtCanvasSprite::collidesWith(const QtCanvasItem* i) const
 {
-    return i->collidesWith(this, 0, 0, 0, 0);
+    return i->collidesWith(this, nullptr, nullptr, nullptr, nullptr);
 }
 
 /*
@@ -2212,7 +2208,7 @@ bool QtCanvasSprite::collidesWith(const QtCanvasSprite* s,
                                   const QtCanvasEllipse* e,
                                   const QtCanvasText* t) const
 {
-    return collision_double_dispatch(s, p, r, e, t, this, 0, 0, 0, 0);
+    return collision_double_dispatch(s, p, r, e, t, this, nullptr, nullptr, nullptr, nullptr);
 }
 
 /*
@@ -2264,7 +2260,7 @@ bool QtCanvasEllipse::collidesWith(const QtCanvasSprite* s,
                                  const QtCanvasEllipse* e,
                                  const QtCanvasText* t) const
 {
-    return collision_double_dispatch(s, p, r, e, t, 0, this, 0, this, 0);
+    return collision_double_dispatch(s, p, r, e, t, 0, this, 0, this, nullptr);
 }
 
 /*
@@ -2272,7 +2268,7 @@ bool QtCanvasEllipse::collidesWith(const QtCanvasSprite* s,
 */
 bool QtCanvasText::collidesWith(const QtCanvasItem* i) const
 {
-    return i->collidesWith(0, 0, 0, 0, this);
+    return i->collidesWith(nullptr, nullptr, nullptr, nullptr, this);
 }
 
 bool QtCanvasText::collidesWith(const QtCanvasSprite* s,
@@ -2281,7 +2277,7 @@ bool QtCanvasText::collidesWith(const QtCanvasSprite* s,
                                  const QtCanvasEllipse* e,
                                  const QtCanvasText* t) const
 {
-    return collision_double_dispatch(s, p, r, e, t, 0, 0, 0, 0, this);
+    return collision_double_dispatch(s, p, r, e, t, nullptr, nullptr, nullptr, nullptr, this);
 }
 
 /*
@@ -2780,7 +2776,7 @@ bool QtCanvasPixmapArray::readPixmaps(const QString& datafilenamepattern,
 */
 bool QtCanvasPixmapArray::operator!()
 {
-    return img == 0;
+    return img == nullptr;
 }
 
 /*
@@ -2789,7 +2785,7 @@ bool QtCanvasPixmapArray::operator!()
 */
 bool QtCanvasPixmapArray::isValid() const
 {
-    return (img != 0);
+    return (img != nullptr);
 }
 
 /*
@@ -3182,7 +3178,7 @@ QtCanvasView::QtCanvasView(QWidget* parent)
     setWidget(new QtCanvasWidget(this));
     d->highQuality = false;
     viewing = 0;
-    setCanvas(0);
+    setCanvas(nullptr);
 }
 
 /*
@@ -3197,7 +3193,7 @@ QtCanvasView::QtCanvasView(QtCanvas* canvas, QWidget* parent)
     d = new QtCanvasViewData;
     d->highQuality = false;
     setWidget(new QtCanvasWidget(this));
-    viewing = 0;
+    viewing = nullptr;
     setCanvas(canvas);
 }
 
@@ -3207,7 +3203,7 @@ QtCanvasView::QtCanvasView(QtCanvas* canvas, QWidget* parent)
 QtCanvasView::~QtCanvasView()
 {
     delete d;
-    d = 0;
+    d = nullptr;
     setCanvas(0);
 }
 
@@ -4982,7 +4978,7 @@ class QPoint;
 
 class QtPolygonScanner {
 public:
-    virtual ~QtPolygonScanner() {}
+    virtual ~QtPolygonScanner() = default;
     void scan(const QPolygon& pa, bool winding, int index = 0, int npoints = -1);
     void scan(const QPolygon& pa, bool winding, int index, int npoints, bool stitchable);
     enum Edge { Left = 1, Right = 2, Top = 4, Bottom = 8 };
@@ -5355,8 +5351,8 @@ static bool
 miInsertEdgeInET(EdgeTable *ET, EdgeTableEntry *ETE, 
         int scanline, ScanLineListBlock **SLLBlock, int *iSLLBlock)
 {
-    register EdgeTableEntry *start, *prev;
-    register ScanLineList *pSLL, *pPrevSLL;
+    EdgeTableEntry *start, *prev;
+    ScanLineList *pSLL, *pPrevSLL;
     ScanLineListBlock *tmpSLLBlock;
 
     /*
@@ -5453,7 +5449,7 @@ typedef struct {
 static void
 miFreeStorage(ScanLineListBlock   *pSLLBlock)
 {
-    register ScanLineListBlock   *tmpSLLBlock;
+    ScanLineListBlock   *tmpSLLBlock;
 
     while (pSLLBlock)
     {
@@ -5467,8 +5463,8 @@ static bool
 miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET, 
         EdgeTableEntry *AET, EdgeTableEntry *pETEs, ScanLineListBlock *pSLLBlock)
 {
-    register DDXPointPtr top, bottom;
-    register DDXPointPtr PrevPt, CurrPt;
+    DDXPointPtr top, bottom;
+    DDXPointPtr PrevPt, CurrPt;
     int iSLLBlock = 0;
 
     int dy;
@@ -5557,8 +5553,8 @@ miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET,
 static void
 miloadAET(EdgeTableEntry *AET, EdgeTableEntry *ETEs)
 {
-    register EdgeTableEntry *pPrevAET;
-    register EdgeTableEntry *tmp;
+    EdgeTableEntry *pPrevAET;
+    EdgeTableEntry *tmp;
 
     pPrevAET = AET;
     AET = AET->next;
@@ -5604,9 +5600,9 @@ miloadAET(EdgeTableEntry *AET, EdgeTableEntry *ETEs)
 static void
 micomputeWAET(EdgeTableEntry *AET)
 {
-    register EdgeTableEntry *pWETE;
-    register int inside = 1;
-    register int isInside = 0;
+    EdgeTableEntry *pWETE;
+    int inside = 1;
+    int isInside = 0;
 
     AET->nextWETE = 0;
     pWETE = AET;
@@ -5642,10 +5638,10 @@ micomputeWAET(EdgeTableEntry *AET)
 static int
 miInsertionSort(EdgeTableEntry *AET)
 {
-    register EdgeTableEntry *pETEchase;
-    register EdgeTableEntry *pETEinsert;
-    register EdgeTableEntry *pETEchaseBackTMP;
-    register int changed = 0;
+    EdgeTableEntry *pETEchase;
+    EdgeTableEntry *pETEinsert;
+    EdgeTableEntry *pETEchaseBackTMP;
+    int changed = 0;
 
     AET = AET->next;
     while (AET)
@@ -5717,12 +5713,12 @@ void QtPolygonScanner::scan(const QPolygon& pa, bool winding, int index, int npo
 
     DDXPointPtr ptsIn = (DDXPointPtr)pa.data();
     ptsIn += index;
-    register EdgeTableEntry *pAET;  /* the Active Edge Table   */
-    register int y;                 /* the current scanline    */
-    register int nPts = 0;          /* number of pts in buffer */
-    register EdgeTableEntry *pWETE; /* Winding Edge Table      */
-    register ScanLineList *pSLL;    /* Current ScanLineList    */
-    register DDXPointPtr ptsOut;      /* ptr to output buffers   */
+    EdgeTableEntry *pAET;  /* the Active Edge Table   */
+    int y;                 /* the current scanline    */
+    int nPts = 0;          /* number of pts in buffer */
+    EdgeTableEntry *pWETE; /* Winding Edge Table      */
+    ScanLineList *pSLL;    /* Current ScanLineList    */
+    DDXPointPtr ptsOut;      /* ptr to output buffers   */
     int *width;
     DDXPointRec FirstPoint[NUMPTSTOBUFFER]; /* the output buffers */
     int FirstWidth[NUMPTSTOBUFFER];

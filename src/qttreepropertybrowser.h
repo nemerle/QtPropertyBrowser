@@ -37,15 +37,11 @@
 **
 ****************************************************************************/
 
-
-#ifndef QTTREEPROPERTYBROWSER_H
-#define QTTREEPROPERTYBROWSER_H
+#pragma once
 
 #include "qtpropertybrowser.h"
 
-#if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
-#endif
 
 class QTreeWidgetItem;
 class QtTreePropertyBrowserPrivate;
@@ -71,7 +67,7 @@ public:
         ResizeToContents
     };
 
-    QtTreePropertyBrowser(QWidget *parent = 0);
+    QtTreePropertyBrowser(QWidget *parent = nullptr);
     ~QtTreePropertyBrowser();
 
     int indentation() const;
@@ -113,9 +109,9 @@ Q_SIGNALS:
     void expanded(QtBrowserItem *item);
 
 protected:
-    virtual void itemInserted(QtBrowserItem *item, QtBrowserItem *afterItem);
-    virtual void itemRemoved(QtBrowserItem *item);
-    virtual void itemChanged(QtBrowserItem *item);
+    void itemInserted(QtBrowserItem *item, QtBrowserItem *afterItem) override;
+    void itemRemoved(QtBrowserItem *item) override;
+    void itemChanged(QtBrowserItem *item) override;
 
 private:
 
@@ -130,8 +126,4 @@ private:
 
 };
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
-
-#endif

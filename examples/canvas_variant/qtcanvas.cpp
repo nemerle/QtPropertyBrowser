@@ -889,8 +889,7 @@ void QtCanvas::setAdvancePeriod(int ms)
         if (update_timer)
             update_timer->stop();
     } else {
-        if (update_timer)
-            delete update_timer;
+        delete update_timer;
         update_timer = new QTimer(this);
         connect(update_timer, SIGNAL(timeout()), this, SLOT(advance()));
         update_timer->start(ms);
@@ -910,8 +909,7 @@ void QtCanvas::setUpdatePeriod(int ms)
         if (update_timer)
             update_timer->stop();
     } else {
-        if (update_timer)
-            delete update_timer;
+        delete update_timer;
         update_timer = new QTimer(this);
         connect(update_timer, SIGNAL(timeout()), this, SLOT(update()));
         update_timer->start(ms);
@@ -1620,7 +1618,7 @@ QtCanvasItem::QtCanvasItem(QtCanvas* canvas) :
     ena = 0;
     act = 0;
 
-    ext = 0;
+    ext = nullptr;
     if (cnv) cnv->addItem(this);
 }
 
@@ -2272,7 +2270,7 @@ bool QtCanvasEllipse::collidesWith(const QtCanvasSprite* s,
 */
 bool QtCanvasText::collidesWith(const QtCanvasItem* i) const
 {
-    return i->collidesWith(0, 0, 0, 0, this);
+    return i->collidesWith(nullptr, nullptr, nullptr, nullptr, this);
 }
 
 bool QtCanvasText::collidesWith(const QtCanvasSprite* s,
@@ -2281,7 +2279,7 @@ bool QtCanvasText::collidesWith(const QtCanvasSprite* s,
                                  const QtCanvasEllipse* e,
                                  const QtCanvasText* t) const
 {
-    return collision_double_dispatch(s, p, r, e, t, 0, 0, 0, 0, this);
+    return collision_double_dispatch(s, p, r, e, t, nullptr, nullptr, 0, 0, this);
 }
 
 /*
@@ -2653,7 +2651,7 @@ QtCanvasPixmapArray::QtCanvasPixmapArray(const QList<QPixmap> &list, const QPoly
     if (list.count() != hotspots.count()) {
         qWarning("QtCanvasPixmapArray: lists have different lengths");
         reset();
-        img = 0;
+        img = nullptr;
     } else {
         for (int i = 0; i < framecount; i++)
             img[i] = new QtCanvasPixmap(list.at(i), hotspots.at(i));
@@ -2674,7 +2672,7 @@ void QtCanvasPixmapArray::reset()
     for (int i = 0; i < framecount; i++)
         delete img[i];
     delete [] img;
-    img = 0;
+    img = nullptr;
     framecount = 0;
 }
 
@@ -5355,8 +5353,8 @@ static bool
 miInsertEdgeInET(EdgeTable *ET, EdgeTableEntry *ETE, 
         int scanline, ScanLineListBlock **SLLBlock, int *iSLLBlock)
 {
-    register EdgeTableEntry *start, *prev;
-    register ScanLineList *pSLL, *pPrevSLL;
+    EdgeTableEntry *start, *prev;
+    ScanLineList *pSLL, *pPrevSLL;
     ScanLineListBlock *tmpSLLBlock;
 
     /*
@@ -5453,7 +5451,7 @@ typedef struct {
 static void
 miFreeStorage(ScanLineListBlock   *pSLLBlock)
 {
-    register ScanLineListBlock   *tmpSLLBlock;
+    ScanLineListBlock   *tmpSLLBlock;
 
     while (pSLLBlock)
     {
@@ -5467,8 +5465,8 @@ static bool
 miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET, 
         EdgeTableEntry *AET, EdgeTableEntry *pETEs, ScanLineListBlock *pSLLBlock)
 {
-    register DDXPointPtr top, bottom;
-    register DDXPointPtr PrevPt, CurrPt;
+    DDXPointPtr top, bottom;
+    DDXPointPtr PrevPt, CurrPt;
     int iSLLBlock = 0;
 
     int dy;
@@ -5478,15 +5476,15 @@ miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET,
     /*
      *  initialize the Active Edge Table
      */
-    AET->next = 0;
-    AET->back = 0;
-    AET->nextWETE = 0;
+    AET->next = nullptr;
+    AET->back = nullptr;
+    AET->nextWETE = nullptr;
     AET->bres.minor = MININT;
 
     /*
      *  initialize the Edge Table.
      */
-    ET->scanlines.next = 0;
+    ET->scanlines.next = nullptr;
     ET->ymax = MININT;
     ET->ymin = MAXINT;
     pSLLBlock->next = 0;
@@ -5557,8 +5555,8 @@ miCreateETandAET(int count, DDXPointPtr pts, EdgeTable *ET,
 static void
 miloadAET(EdgeTableEntry *AET, EdgeTableEntry *ETEs)
 {
-    register EdgeTableEntry *pPrevAET;
-    register EdgeTableEntry *tmp;
+    EdgeTableEntry *pPrevAET;
+    EdgeTableEntry *tmp;
 
     pPrevAET = AET;
     AET = AET->next;
@@ -5604,9 +5602,9 @@ miloadAET(EdgeTableEntry *AET, EdgeTableEntry *ETEs)
 static void
 micomputeWAET(EdgeTableEntry *AET)
 {
-    register EdgeTableEntry *pWETE;
-    register int inside = 1;
-    register int isInside = 0;
+    EdgeTableEntry *pWETE;
+    int inside = 1;
+    int isInside = 0;
 
     AET->nextWETE = 0;
     pWETE = AET;
@@ -5642,10 +5640,10 @@ micomputeWAET(EdgeTableEntry *AET)
 static int
 miInsertionSort(EdgeTableEntry *AET)
 {
-    register EdgeTableEntry *pETEchase;
-    register EdgeTableEntry *pETEinsert;
-    register EdgeTableEntry *pETEchaseBackTMP;
-    register int changed = 0;
+    EdgeTableEntry *pETEchase;
+    EdgeTableEntry *pETEinsert;
+    EdgeTableEntry *pETEchaseBackTMP;
+    int changed = 0;
 
     AET = AET->next;
     while (AET)
@@ -5717,12 +5715,12 @@ void QtPolygonScanner::scan(const QPolygon& pa, bool winding, int index, int npo
 
     DDXPointPtr ptsIn = (DDXPointPtr)pa.data();
     ptsIn += index;
-    register EdgeTableEntry *pAET;  /* the Active Edge Table   */
-    register int y;                 /* the current scanline    */
-    register int nPts = 0;          /* number of pts in buffer */
-    register EdgeTableEntry *pWETE; /* Winding Edge Table      */
-    register ScanLineList *pSLL;    /* Current ScanLineList    */
-    register DDXPointPtr ptsOut;      /* ptr to output buffers   */
+    EdgeTableEntry *pAET;  /* the Active Edge Table   */
+    int y;                 /* the current scanline    */
+    int nPts = 0;          /* number of pts in buffer */
+    EdgeTableEntry *pWETE; /* Winding Edge Table      */
+    ScanLineList *pSLL;    /* Current ScanLineList    */
+    DDXPointPtr ptsOut;      /* ptr to output buffers   */
     int *width;
     DDXPointRec FirstPoint[NUMPTSTOBUFFER]; /* the output buffers */
     int FirstWidth[NUMPTSTOBUFFER];

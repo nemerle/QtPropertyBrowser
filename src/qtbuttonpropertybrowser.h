@@ -38,14 +38,11 @@
 ****************************************************************************/
 
 
-#ifndef QTBUTTONPROPERTYBROWSER_H
-#define QTBUTTONPROPERTYBROWSER_H
+#pragma once
 
 #include "qtpropertybrowser.h"
 
-#if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
-#endif
 
 class QtButtonPropertyBrowserPrivate;
 
@@ -54,8 +51,8 @@ class QT_QTPROPERTYBROWSER_EXPORT QtButtonPropertyBrowser : public QtAbstractPro
     Q_OBJECT
 public:
 
-    QtButtonPropertyBrowser(QWidget *parent = 0);
-    ~QtButtonPropertyBrowser();
+    explicit QtButtonPropertyBrowser(QWidget *parent = nullptr);
+    ~QtButtonPropertyBrowser() override;
 
     void setExpanded(QtBrowserItem *item, bool expanded);
     bool isExpanded(QtBrowserItem *item) const;
@@ -66,9 +63,9 @@ Q_SIGNALS:
     void expanded(QtBrowserItem *item);
 
 protected:
-    virtual void itemInserted(QtBrowserItem *item, QtBrowserItem *afterItem);
-    virtual void itemRemoved(QtBrowserItem *item);
-    virtual void itemChanged(QtBrowserItem *item);
+    void itemInserted(QtBrowserItem *item, QtBrowserItem *afterItem) override;
+    void itemRemoved(QtBrowserItem *item) override;
+    void itemChanged(QtBrowserItem *item) override;
 
 private:
 
@@ -77,12 +74,6 @@ private:
     Q_DISABLE_COPY(QtButtonPropertyBrowser)
     Q_PRIVATE_SLOT(d_func(), void slotUpdate())
     Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed())
-    Q_PRIVATE_SLOT(d_func(), void slotToggled(bool))
-
 };
 
-#if QT_VERSION >= 0x040400
 QT_END_NAMESPACE
-#endif
-
-#endif

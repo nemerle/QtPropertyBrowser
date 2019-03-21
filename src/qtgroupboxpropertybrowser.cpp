@@ -69,15 +69,14 @@ public:
 
     struct WidgetItem
     {
-        WidgetItem() : widget(0), label(0), widgetLabel(0),
-                groupBox(0), layout(0), line(0), parent(0) { }
-        QWidget *widget; // can be null
-        QLabel *label;
-        QLabel *widgetLabel;
-        QGroupBox *groupBox;
-        QGridLayout *layout;
-        QFrame *line;
-        WidgetItem *parent;
+        WidgetItem() = default;
+        QWidget *widget = nullptr; // can be null
+        QLabel *label = nullptr;
+        QLabel *widgetLabel = nullptr;
+        QGroupBox *groupBox = nullptr;
+        QGridLayout *layout = nullptr;
+        QFrame *line = nullptr;
+        WidgetItem *parent = nullptr;
         QList<WidgetItem *> children;
     };
 private:
@@ -112,7 +111,7 @@ void QtGroupBoxPropertyBrowserPrivate::slotEditorDestroyed()
         return;
     if (!m_widgetToItem.contains(editor))
         return;
-    m_widgetToItem[editor]->widget = 0;
+    m_widgetToItem[editor]->widget = nullptr;
     m_widgetToItem.remove(editor);
 }
 
@@ -123,8 +122,8 @@ void QtGroupBoxPropertyBrowserPrivate::slotUpdate()
         WidgetItem *item = itItem.next();
 
         WidgetItem *par = item->parent;
-        QWidget *w = 0;
-        QGridLayout *l = 0;
+        QWidget *w = nullptr;
+        QGridLayout *l = nullptr;
         int oldRow = -1;
         if (!par) {
             w = q_ptr;
@@ -173,11 +172,11 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
     WidgetItem *afterItem = m_indexToItem.value(afterIndex);
     WidgetItem *parentItem = m_indexToItem.value(index->parent());
 
-    WidgetItem *newItem = new WidgetItem();
+    auto newItem = new WidgetItem();
     newItem->parent = parentItem;
 
-    QGridLayout *layout = 0;
-    QWidget *parentWidget = 0;
+    QGridLayout *layout = nullptr;
+    QWidget *parentWidget = nullptr;
     int row = -1;
     if (!afterItem) {
         row = 0;
@@ -204,8 +203,8 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
         if (!parentItem->groupBox) {
             m_recreateQueue.removeAll(parentItem);
             WidgetItem *par = parentItem->parent;
-            QWidget *w = 0;
-            QGridLayout *l = 0;
+            QWidget *w = nullptr;
+            QGridLayout *l = nullptr;
             int oldRow = -1;
             if (!par) {
                 w = q_ptr;
@@ -224,7 +223,7 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
             if (parentItem->label) {
                 l->removeWidget(parentItem->label);
                 delete parentItem->label;
-                parentItem->label = 0;
+                parentItem->label = nullptr;
             }
             if (parentItem->widget) {
                 l->removeWidget(parentItem->widget);
@@ -234,7 +233,7 @@ void QtGroupBoxPropertyBrowserPrivate::propertyInserted(QtBrowserItem *index, Qt
             } else if (parentItem->widgetLabel) {
                 l->removeWidget(parentItem->widgetLabel);
                 delete parentItem->widgetLabel;
-                parentItem->widgetLabel = 0;
+                parentItem->widgetLabel = nullptr;
             }
             if (parentItem->line) {
                 parentItem->line->setFrameShape(QFrame::HLine);
@@ -297,14 +296,10 @@ void QtGroupBoxPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
         m_children.removeAt(row);
     }
 
-    if (item->widget)
-        delete item->widget;
-    if (item->label)
-        delete item->label;
-    if (item->widgetLabel)
-        delete item->widgetLabel;
-    if (item->groupBox)
-        delete item->groupBox;
+    delete item->widget;
+    delete item->label;
+    delete item->widgetLabel;
+    delete item->groupBox;
 
     if (!parentItem) {
         removeRow(m_mainLayout, row);
@@ -312,8 +307,8 @@ void QtGroupBoxPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
         removeRow(parentItem->layout, row);
     } else {
         WidgetItem *par = parentItem->parent;
-        QWidget *w = 0;
-        QGridLayout *l = 0;
+        QWidget *w = nullptr;
+        QGridLayout *l = nullptr;
         int oldRow = -1;
         if (!par) {
             w = q_ptr;
@@ -329,18 +324,18 @@ void QtGroupBoxPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
 
         if (parentItem->widget) {
             parentItem->widget->hide();
-            parentItem->widget->setParent(0);
+            parentItem->widget->setParent(nullptr);
         } else if (parentItem->widgetLabel) {
             parentItem->widgetLabel->hide();
-            parentItem->widgetLabel->setParent(0);
+            parentItem->widgetLabel->setParent(nullptr);
         } else {
             //parentItem->widgetLabel = new QLabel(w);
         }
         l->removeWidget(parentItem->groupBox);
         delete parentItem->groupBox;
-        parentItem->groupBox = 0;
-        parentItem->line = 0;
-        parentItem->layout = 0;
+        parentItem->groupBox = nullptr;
+        parentItem->line = nullptr;
+        parentItem->layout = nullptr;
         if (!m_recreateQueue.contains(parentItem))
             m_recreateQueue.append(parentItem);
         updateLater();
@@ -352,7 +347,7 @@ void QtGroupBoxPropertyBrowserPrivate::propertyRemoved(QtBrowserItem *index)
 
 void QtGroupBoxPropertyBrowserPrivate::insertRow(QGridLayout *layout, int row) const
 {
-    QMap<QLayoutItem *, QRect> itemToPos;
+    QHash<QLayoutItem *, QRect> itemToPos;
     int idx = 0;
     while (idx < layout->count()) {
         int r, c, rs, cs;
@@ -364,8 +359,8 @@ void QtGroupBoxPropertyBrowserPrivate::insertRow(QGridLayout *layout, int row) c
         }
     }
 
-    const QMap<QLayoutItem *, QRect>::ConstIterator icend = itemToPos.constEnd();
-    for (QMap<QLayoutItem *, QRect>::ConstIterator it = itemToPos.constBegin(); it != icend; ++it) {
+    auto icend = itemToPos.cend();
+    for (auto it = itemToPos.cbegin(); it != icend; ++it) {
         const QRect r = it.value();
         layout->addItem(it.key(), r.x(), r.y(), r.width(), r.height());
     }
@@ -373,7 +368,7 @@ void QtGroupBoxPropertyBrowserPrivate::insertRow(QGridLayout *layout, int row) c
 
 void QtGroupBoxPropertyBrowserPrivate::removeRow(QGridLayout *layout, int row) const
 {
-    QMap<QLayoutItem *, QRect> itemToPos;
+    QHash<QLayoutItem *, QRect> itemToPos;
     int idx = 0;
     while (idx < layout->count()) {
         int r, c, rs, cs;
@@ -385,8 +380,8 @@ void QtGroupBoxPropertyBrowserPrivate::removeRow(QGridLayout *layout, int row) c
         }
     }
 
-    const QMap<QLayoutItem *, QRect>::ConstIterator icend = itemToPos.constEnd();
-    for (QMap<QLayoutItem *, QRect>::ConstIterator it = itemToPos.constBegin(); it != icend; ++it) {
+    auto icend = itemToPos.cend();
+    for (auto it = itemToPos.cbegin(); it != icend; ++it) {
         const QRect r = it.value();
         layout->addItem(it.key(), r.x(), r.y(), r.width(), r.height());
     }
@@ -394,9 +389,7 @@ void QtGroupBoxPropertyBrowserPrivate::removeRow(QGridLayout *layout, int row) c
 
 bool QtGroupBoxPropertyBrowserPrivate::hasHeader(WidgetItem *item) const
 {
-    if (item->widget)
-        return true;
-    return false;
+    return nullptr!=item->widget;
 }
 
 void QtGroupBoxPropertyBrowserPrivate::propertyChanged(QtBrowserItem *index)

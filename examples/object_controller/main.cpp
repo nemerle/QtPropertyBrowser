@@ -105,8 +105,7 @@ MyController::MyController(QWidget *parent)
 
 MyController::~MyController()
 {
-    if (theControlledObject)
-        delete theControlledObject;
+    delete theControlledObject;
 }
 
 void MyController::createAndControl()
@@ -145,8 +144,8 @@ void MyController::createAndControl()
         newWidget->show();
     }
 
-    if (theControlledObject)
-        delete theControlledObject;
+
+    delete theControlledObject;
 
     theControlledObject = newObject;
     theController->setObject(theControlledObject);
